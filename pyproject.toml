@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dagster-livestock-workshop"
+version = "0.1.0"
+description = "Dagster workshop scaffold for precision livestock technology researchers"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "dagster>=1.8.0",
+  "dagster-webserver>=1.8.0",
+  "requests>=2.32.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.dagster]
+module_name = "dagster_livestock_workshop.definitions"
+code_location_name = "dagster_livestock_workshop"

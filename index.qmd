@@ -1,0 +1,15 @@
+---
+title: "Dagster Fundamentals Workshop"
+---
+
+## Precision Livestock Technology Workshop
+
+This repository contains:
+
+- A Dagster scaffold with API and scheduling demos
+- A Python subprocess utility that runs R scripts with `Rscript`
+- A 1-hour slide deck for teaching Dagster fundamentals
+
+Open the slide deck at:
+
+- [Workshop Slides](slides/workshop.qmd)

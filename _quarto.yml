@@ -1,0 +1,17 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Dagster Fundamentals for Precision Livestock Tech"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: slides/workshop.qmd
+        text: Workshop Slides
+
+format:
+  html:
+    theme: cosmo
+    toc: true

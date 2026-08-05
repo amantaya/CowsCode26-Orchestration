@@ -1,0 +1,155 @@
+---
+title: "Dagster Fundamentals for Precision Livestock Technology"
+subtitle: "1-Hour Hands-On Workshop"
+author: "Your Name"
+format:
+  revealjs:
+    theme: [beige]
+    transition: slide
+    slide-number: true
+    incremental: true
+    chalkboard: true
+execute:
+  echo: false
+---
+
+## Welcome
+
+### Audience
+
+Researchers building precision livestock analytics, often in R.
+
+### Goal
+
+By the end, participants can:
+
+- Explain core Dagster concepts (assets, jobs, schedules)
+- Materialize an API-based asset
+- Schedule recurring API ingestion
+- Integrate R scripts into a Python-orchestrated pipeline
+
+## 60-Minute Agenda
+
+| Time | Topic |
+|---|---|
+| 0:00-0:10 | Why orchestration in livestock research? |
+| 0:10-0:20 | Dagster mental model |
+| 0:20-0:35 | Live demo: materialize API asset |
+| 0:35-0:45 | Live demo: run R script from Dagster |
+| 0:45-0:55 | Live demo: scheduled API call |
+| 0:55-1:00 | Wrap-up and next steps |
+
+## Why Dagster for Livestock Research?
+
+- Data arrives continuously: sensors, climate feeds, herd events
+- Reproducibility is critical for scientific workflows
+- Asset lineage helps explain how datasets were produced
+- Schedules and automation reduce manual refresh work
+
+## Core Concepts
+
+## Asset
+
+A durable data product, for example:
+
+- Daily barn environment summary
+- Animal movement anomaly table
+- API snapshot from a welfare endpoint
+
+## Job
+
+A selection of assets to execute together.
+
+## Schedule
+
+A cron-like trigger that runs a job automatically.
+
+## Project Walkthrough
+
+```text
+src/dagster_livestock_workshop/
+  assets.py
+  schedules.py
+  definitions.py
+scripts/
+  summarize_livestock_api.R
+run_r_subprocess.py
+```
+
+## Live Demo 1: Materialize API Asset
+
+1. Start Dagster UI.
+2. Find asset `livestock_reference_api`.
+3. Click Materialize.
+4. Inspect metadata and generated JSON file.
+
+```bash
+pip install -e .
+dagster dev -m dagster_livestock_workshop.definitions
+```
+
+## Demo 1 Discussion
+
+- This pattern can ingest weather, market, or disease surveillance endpoints.
+- Materializations are timestamped and traceable.
+- Data is persisted under `data/`.
+
+## Live Demo 2: Run R via Python Subprocess
+
+Asset: `r_postprocess_demo`
+
+- Depends on `livestock_reference_api`
+- Calls `Rscript scripts/summarize_livestock_api.R`
+- Writes `data/livestock_reference_summary.csv`
+
+## Why This Matters for R-First Teams
+
+- Keep R statistical workflows
+- Add orchestration and scheduling in Dagster
+- Incrementally migrate only what needs Python
+
+## Live Demo 3: Scheduled API Call
+
+Asset: `scheduled_livestock_api`
+
+- Job: `scheduled_livestock_job`
+- Schedule: `daily_livestock_schedule` (`0 9 * * *` UTC)
+
+In Dagster UI:
+
+1. Open Automation / Schedules
+2. Enable `daily_livestock_schedule`
+3. Trigger a manual tick for demonstration
+
+## Suggested Extensions
+
+- Replace demo API with farm-specific endpoint
+- Add validation checks (missing fields, stale timestamp)
+- Partition by date for historical backfills
+- Store outputs in cloud object storage
+
+## Common Pitfalls
+
+- `Rscript` not found on PATH
+- R package `jsonlite` missing
+- API latency/timeouts without retries
+- Forgetting timezone assumptions in schedules
+
+## Recap
+
+You now have:
+
+- A Dagster scaffold ready for demos
+- A Python subprocess bridge to R
+- A materialized API asset pattern
+- A scheduled ingestion pattern
+
+## Next Steps
+
+- Pilot one production-relevant livestock API
+- Add tests for assets and transformations
+- Move local `data/` outputs to shared storage
+
+## Q&A
+
+What part should we productionize first for your team?
