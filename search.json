@@ -1,0 +1,142 @@
+[
+  {
+    "objectID": "slides/workshop.html#welcome",
+    "href": "slides/workshop.html#welcome",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Welcome",
+    "text": "Welcome\nAudience\nResearchers building precision livestock analytics, often in R.\nGoal\nBy the end, participants can:\n\nExplain core Dagster concepts (assets, jobs, schedules)\nMaterialize an API-based asset\nSchedule recurring API ingestion\nIntegrate R scripts into a Python-orchestrated pipeline"
+  },
+  {
+    "objectID": "slides/workshop.html#minute-agenda",
+    "href": "slides/workshop.html#minute-agenda",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "60-Minute Agenda",
+    "text": "60-Minute Agenda\n\n\n\nTime\nTopic\n\n\n\n\n0:00-0:10\nWhy orchestration in livestock research?\n\n\n0:10-0:20\nDagster mental model\n\n\n0:20-0:35\nLive demo: materialize API asset\n\n\n0:35-0:45\nLive demo: run R script from Dagster\n\n\n0:45-0:55\nLive demo: scheduled API call\n\n\n0:55-1:00\nWrap-up and next steps"
+  },
+  {
+    "objectID": "slides/workshop.html#why-dagster-for-livestock-research",
+    "href": "slides/workshop.html#why-dagster-for-livestock-research",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Why Dagster for Livestock Research?",
+    "text": "Why Dagster for Livestock Research?\n\nData arrives continuously: sensors, climate feeds, herd events\nReproducibility is critical for scientific workflows\nAsset lineage helps explain how datasets were produced\nSchedules and automation reduce manual refresh work"
+  },
+  {
+    "objectID": "slides/workshop.html#core-concepts",
+    "href": "slides/workshop.html#core-concepts",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Core Concepts",
+    "text": "Core Concepts"
+  },
+  {
+    "objectID": "slides/workshop.html#asset",
+    "href": "slides/workshop.html#asset",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Asset",
+    "text": "Asset\nA durable data product, for example:\n\nDaily barn environment summary\nAnimal movement anomaly table\nAPI snapshot from a welfare endpoint"
+  },
+  {
+    "objectID": "slides/workshop.html#job",
+    "href": "slides/workshop.html#job",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Job",
+    "text": "Job\nA selection of assets to execute together."
+  },
+  {
+    "objectID": "slides/workshop.html#schedule",
+    "href": "slides/workshop.html#schedule",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Schedule",
+    "text": "Schedule\nA cron-like trigger that runs a job automatically."
+  },
+  {
+    "objectID": "slides/workshop.html#project-walkthrough",
+    "href": "slides/workshop.html#project-walkthrough",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Project Walkthrough",
+    "text": "Project Walkthrough\nsrc/dagster_livestock_workshop/\n  assets.py\n  schedules.py\n  definitions.py\nscripts/\n  summarize_livestock_api.R\nrun_r_subprocess.py"
+  },
+  {
+    "objectID": "slides/workshop.html#live-demo-1-materialize-api-asset",
+    "href": "slides/workshop.html#live-demo-1-materialize-api-asset",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Live Demo 1: Materialize API Asset",
+    "text": "Live Demo 1: Materialize API Asset\n\nStart Dagster UI.\nFind asset livestock_reference_api.\nClick Materialize.\nInspect metadata and generated JSON file.\n\npip install -e .\ndagster dev -m dagster_livestock_workshop.definitions"
+  },
+  {
+    "objectID": "slides/workshop.html#demo-1-discussion",
+    "href": "slides/workshop.html#demo-1-discussion",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Demo 1 Discussion",
+    "text": "Demo 1 Discussion\n\nThis pattern can ingest weather, market, or disease surveillance endpoints.\nMaterializations are timestamped and traceable.\nData is persisted under data/."
+  },
+  {
+    "objectID": "slides/workshop.html#live-demo-2-run-r-via-python-subprocess",
+    "href": "slides/workshop.html#live-demo-2-run-r-via-python-subprocess",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Live Demo 2: Run R via Python Subprocess",
+    "text": "Live Demo 2: Run R via Python Subprocess\nAsset: r_postprocess_demo\n\nDepends on livestock_reference_api\nCalls Rscript scripts/summarize_livestock_api.R\nWrites data/livestock_reference_summary.csv"
+  },
+  {
+    "objectID": "slides/workshop.html#why-this-matters-for-r-first-teams",
+    "href": "slides/workshop.html#why-this-matters-for-r-first-teams",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Why This Matters for R-First Teams",
+    "text": "Why This Matters for R-First Teams\n\nKeep R statistical workflows\nAdd orchestration and scheduling in Dagster\nIncrementally migrate only what needs Python"
+  },
+  {
+    "objectID": "slides/workshop.html#live-demo-3-scheduled-api-call",
+    "href": "slides/workshop.html#live-demo-3-scheduled-api-call",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Live Demo 3: Scheduled API Call",
+    "text": "Live Demo 3: Scheduled API Call\nAsset: scheduled_livestock_api\n\nJob: scheduled_livestock_job\nSchedule: daily_livestock_schedule (0 9 * * * UTC)\n\nIn Dagster UI:\n\nOpen Automation / Schedules\nEnable daily_livestock_schedule\nTrigger a manual tick for demonstration"
+  },
+  {
+    "objectID": "slides/workshop.html#suggested-extensions",
+    "href": "slides/workshop.html#suggested-extensions",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Suggested Extensions",
+    "text": "Suggested Extensions\n\nReplace demo API with farm-specific endpoint\nAdd validation checks (missing fields, stale timestamp)\nPartition by date for historical backfills\nStore outputs in cloud object storage"
+  },
+  {
+    "objectID": "slides/workshop.html#common-pitfalls",
+    "href": "slides/workshop.html#common-pitfalls",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Common Pitfalls",
+    "text": "Common Pitfalls\n\nRscript not found on PATH\nR package jsonlite missing\nAPI latency/timeouts without retries\nForgetting timezone assumptions in schedules"
+  },
+  {
+    "objectID": "slides/workshop.html#recap",
+    "href": "slides/workshop.html#recap",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Recap",
+    "text": "Recap\nYou now have:\n\nA Dagster scaffold ready for demos\nA Python subprocess bridge to R\nA materialized API asset pattern\nA scheduled ingestion pattern"
+  },
+  {
+    "objectID": "slides/workshop.html#next-steps",
+    "href": "slides/workshop.html#next-steps",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Next Steps",
+    "text": "Next Steps\n\nPilot one production-relevant livestock API\nAdd tests for assets and transformations\nMove local data/ outputs to shared storage"
+  },
+  {
+    "objectID": "slides/workshop.html#qa",
+    "href": "slides/workshop.html#qa",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Q&A",
+    "text": "Q&A\nWhat part should we productionize first for your team?"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Dagster Fundamentals Workshop",
+    "section": "",
+    "text": "This repository contains:\n\nA Dagster scaffold with API and scheduling demos\nA Python subprocess utility that runs R scripts with Rscript\nA 1-hour slide deck for teaching Dagster fundamentals\n\nOpen the slide deck at:\n\nWorkshop Slides"
+  },
+  {
+    "objectID": "index.html#precision-livestock-technology-workshop",
+    "href": "index.html#precision-livestock-technology-workshop",
+    "title": "Dagster Fundamentals Workshop",
+    "section": "",
+    "text": "This repository contains:\n\nA Dagster scaffold with API and scheduling demos\nA Python subprocess utility that runs R scripts with Rscript\nA 1-hour slide deck for teaching Dagster fundamentals\n\nOpen the slide deck at:\n\nWorkshop Slides"
+  }
+]
