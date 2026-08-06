@@ -9,7 +9,7 @@
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.10.18">
 
-  <meta name="author" content="Your Name">
+  <meta name="author" content="By Andrew Antaya and My AI Assistant">
   <title>Dagster Fundamentals for Precision Livestock Tech – Dagster Fundamentals for Precision Livestock Technology</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -101,7 +101,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-5c8106c274dac56d8e05e3022a5a12af.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-2740581606dc327e82f18f789b69d8a0.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,16 +207,14 @@
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Your Name
+By Andrew Antaya and My AI Assistant
 </div>
 </div>
 </div>
 
 </section>
-<section id="welcome" class="slide level2">
-<h2>Welcome</h2>
-<h3 id="audience">Audience</h3>
-<p>Researchers building precision livestock analytics, often in R.</p>
+<section class="slide level2">
+
 <h3 id="goal">Goal</h3>
 <p>By the end, participants can:</p>
 <ul>
@@ -225,6 +223,23 @@ Your Name
 <li class="fragment">Schedule recurring API ingestion</li>
 <li class="fragment">Integrate R scripts into a Python-orchestrated pipeline</li>
 </ul>
+</section>
+<section id="what-is-an-orchestrator" class="slide level2">
+<h2>What Is an Orchestrator?</h2>
+<p>An orchestrator manages when work runs, what depends on what, and how failures are handled.</p>
+<ul>
+<li class="fragment">It connects steps into reliable pipelines</li>
+<li class="fragment">It schedules recurring work and retries failures</li>
+<li class="fragment">It gives you logs, lineage, and a UI for monitoring</li>
+<li class="fragment">It coordinates work, but usually does not do the heavy computation itself</li>
+</ul>
+<p>Popular examples:</p>
+<ul>
+<li class="fragment">Apache Airflow, the original widely adopted workflow orchestrator</li>
+<li class="fragment">Prefect, a simpler and more lightweight alternative for many teams</li>
+<li class="fragment">Dagster, a newer tool that focuses on data assets and developer experience</li>
+</ul>
+<p>Most modern orchestrators are Python-first, but that does not mean your whole workflow must be Python. You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline.</p>
 </section>
 <section id="minute-agenda" class="slide level2">
 <h2>60-Minute Agenda</h2>
@@ -269,28 +284,78 @@ Your Name
 <li class="fragment">Data arrives continuously: sensors, GPS collars, and APIs</li>
 <li class="fragment">Reproducibility is critical for scientific workflows</li>
 <li class="fragment">Asset lineage helps explain how datasets were produced</li>
-<li class="fragment">Schedules and automation reduce manual refresh work and</li>
+<li class="fragment">Schedules and automation reduce manual refresh work</li>
+<li class="fragment">Nice UI for tracing what ran, what failed, and what data changed</li>
+<li class="fragment">Easier to reason about than task-only workflow tools when the output dataset is the real product</li>
+</ul>
+</section>
+<section id="why-dagster" class="slide level2">
+<h2>Why Dagster?</h2>
+<ul>
+<li class="fragment">Focuses on data assets, not just tasks</li>
+<li class="fragment">Makes dependencies between datasets explicit</li>
+<li class="fragment">Has a clean UI for materializations, lineage, and observability</li>
+<li class="fragment">Plays well with Python, while still letting you call out to R when that is the right tool</li>
 </ul>
 </section>
 <section id="core-concepts" class="slide level2">
 <h2>Core Concepts</h2>
+<ul>
+<li class="fragment">Definitions</li>
+<li class="fragment">Assets</li>
+<li class="fragment">Jobs</li>
+<li class="fragment">Schedules</li>
+<li class="fragment">Sensors</li>
+</ul>
+</section>
+<section id="definitions" class="slide level2">
+<h2>Definitions</h2>
+<p><code>Definitions</code> is the top-level Dagster object where you register the pieces of your project.</p>
+<ul>
+<li class="fragment">Assets: what data products exist</li>
+<li class="fragment">Jobs: what can be executed</li>
+<li class="fragment">Schedules: when things should run</li>
+<li class="fragment">Resources: external systems like APIs, databases, or file paths</li>
+</ul>
+<p>Dagster uses this registry to understand the shape of the project and to power the UI.</p>
 </section>
 <section id="asset" class="slide level2">
 <h2>Asset</h2>
-<p>A durable data product, for example:</p>
+<p>A durable data product that Dagster can track over time.</p>
+<p>Think of an asset as the thing you actually care about producing, not just the code that made it.</p>
+<p>The actual data product could be a CSV, Parquet, or JSON file, a database table, an in-memory data frame, or even a machine learning model.</p>
+<p><strong>Dagster records <em>when</em> it was produced, what <em>code</em> produced it, and <em>what</em> it depends on</strong></p>
+<p>Examples:</p>
 <ul>
-<li class="fragment">10 Hz Accelerometer data from ear tags</li>
-<li class="fragment">GPS points from virtual fence collars</li>
-<li class="fragment">API data from a GreenFeed machine</li>
+<li class="fragment">10 Hz Accelerometer data from ear tags stored as an in-memory data frame</li>
+<li class="fragment">GPS points from virtual fence collars written to a table in a database</li>
+<li class="fragment">API data from a GreenFeed machine downloaded to a CSV file</li>
 </ul>
 </section>
 <section id="job" class="slide level2">
 <h2>Job</h2>
-<p>A selection of assets to execute together.</p>
+<p>Jobs are how you run a pipeline in Dagster. A pipeline is a directed acyclic graph (DAG) of ops that produce assets.</p>
+<p>Use a job when you want a repeatable unit of work, such as a daily download from an API or a full pipeline.</p>
+<p>The key to a job is that it is <em>repeatable</em> and <em>deterministic</em>: the same inputs should produce the same outputs.</p>
+<p>Jobs can be triggered manually, via a schedule, or via an external event.</p>
 </section>
 <section id="schedule" class="slide level2">
 <h2>Schedule</h2>
-<p>A cron-like trigger that runs a job automatically.</p>
+<p>A schedule is a time-based trigger that launches a job automatically.</p>
+<p>It is how you say, “run this every morning” without manually clicking anything.</p>
+</section>
+<section id="sensor" class="slide level2">
+<h2>Sensor</h2>
+<p>A sensor is an event-driven trigger that launches a job when an external condition is met.</p>
+<p>Instead of running on a clock, a sensor polls for something: a new file, a changed value, or an API returning fresh data.</p>
+<p>Examples in livestock research:</p>
+<ul>
+<li class="fragment">A new accelerometer upload appears in a shared folder</li>
+<li class="fragment">A GreenFeed API endpoint returns a record newer than the last ingestion</li>
+<li class="fragment">LoRaWAN gateway reports new data from on-farm sensors</li>
+</ul>
+<p>Use a sensor when the data arrives irregularly and a fixed schedule would either miss events or run unnecessarily.</p>
+<p>My favorite pattern is to drag and drop a file into a specified folder, and have a sensor detect that file and trigger a job to process it. It’s the lazy scientist’s dream: just drop the file and let the orchestrator handle the rest.</p>
 </section>
 <section id="project-walkthrough" class="slide level2">
 <h2>Project Walkthrough</h2>
@@ -352,22 +417,15 @@ Your Name
 <li class="fragment">Trigger a manual tick for demonstration</li>
 </ol>
 </section>
-<section id="suggested-extensions" class="slide level2">
-<h2>Suggested Extensions</h2>
+<section id="how-i-use-dagster-my-greenfeed-data-pipeline" class="slide level2">
+<h2>How I Use Dagster (My GreenFeed Data Pipeline)</h2>
 <ul>
-<li class="fragment">Replace demo API with farm-specific endpoint</li>
-<li class="fragment">Add validation checks (missing fields, stale timestamp)</li>
-<li class="fragment">Partition by date for historical backfills</li>
-<li class="fragment">Store outputs in cloud object storage</li>
-</ul>
-</section>
-<section id="common-pitfalls" class="slide level2">
-<h2>Common Pitfalls</h2>
-<ul>
-<li class="fragment"><code>Rscript</code> not found on PATH</li>
-<li class="fragment">R package <code>jsonlite</code> missing</li>
-<li class="fragment">API latency/timeouts without retries</li>
-<li class="fragment">Forgetting timezone assumptions in schedules</li>
+<li class="fragment">Download GreenFeed Data API every morning at 3:00 AM MST</li>
+<li class="fragment">Write raw data to CSV file in shared storage</li>
+<li class="fragment">Run R script to clean data (e.g., remove duplicates, standardize column names, drop erroneous values)</li>
+<li class="fragment">Write cleaned data to table in duckdb database</li>
+<li class="fragment">Run R script to enrich cleaned data with contextual metadata (ranch, species, animal class, feed type)</li>
+<li class="fragment">Persist enriched dataset to a second duckdb table for downstream analysis</li>
 </ul>
 </section>
 <section id="recap" class="slide level2">
