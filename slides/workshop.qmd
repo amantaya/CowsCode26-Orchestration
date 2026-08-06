@@ -41,10 +41,10 @@ By the end, participants can:
 
 ## Why Dagster for Livestock Research?
 
-- Data arrives continuously: sensors, climate feeds, herd events
+- Data arrives continuously: sensors, GPS collars, and APIs
 - Reproducibility is critical for scientific workflows
 - Asset lineage helps explain how datasets were produced
-- Schedules and automation reduce manual refresh work
+- Schedules and automation reduce manual refresh work and
 
 ## Core Concepts
 
@@ -52,9 +52,9 @@ By the end, participants can:
 
 A durable data product, for example:
 
-- Daily barn environment summary
-- Animal movement anomaly table
-- API snapshot from a welfare endpoint
+- 10 Hz Accelerometer data from ear tags
+- GPS points from virtual fence collars
+- API data from a GreenFeed machine
 
 ## Job
 
