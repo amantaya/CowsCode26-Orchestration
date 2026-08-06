@@ -18,7 +18,7 @@
     "href": "slides/workshop.html#why-dagster-for-livestock-research",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Why Dagster for Livestock Research?",
-    "text": "Why Dagster for Livestock Research?\n\nData arrives continuously: sensors, climate feeds, herd events\nReproducibility is critical for scientific workflows\nAsset lineage helps explain how datasets were produced\nSchedules and automation reduce manual refresh work"
+    "text": "Why Dagster for Livestock Research?\n\nData arrives continuously: sensors, GPS collars, and APIs\nReproducibility is critical for scientific workflows\nAsset lineage helps explain how datasets were produced\nSchedules and automation reduce manual refresh work and"
   },
   {
     "objectID": "slides/workshop.html#core-concepts",
@@ -32,7 +32,7 @@
     "href": "slides/workshop.html#asset",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Asset",
-    "text": "Asset\nA durable data product, for example:\n\nDaily barn environment summary\nAnimal movement anomaly table\nAPI snapshot from a welfare endpoint"
+    "text": "Asset\nA durable data product, for example:\n\n10 Hz Accelerometer data from ear tags\nGPS points from virtual fence collars\nAPI data from a GreenFeed machine"
   },
   {
     "objectID": "slides/workshop.html#job",
