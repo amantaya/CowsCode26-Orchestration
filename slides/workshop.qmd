@@ -160,7 +160,7 @@ dagster dev -m dagster_livestock_workshop.definitions
 
 ## Demo 1 Discussion
 
-- This pattern can ingest weather, market, or disease surveillance endpoints.
+- This pattern can be used to ingest data from APIs, CSV files, or databases.
 - Materializations are timestamped and traceable.
 - Data is persisted under `data/`.
 
