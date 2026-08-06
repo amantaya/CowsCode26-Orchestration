@@ -69,7 +69,22 @@ You can still run R scripts, SQL, shell commands, or containerized tools as step
 
 ## Core Concepts
 
+- Definitions
+- Assets
+- Jobs
+- Schedules
+- Sensors
 
+## Definitions
+
+`Definitions` is the top-level Dagster object where you register the pieces of your project.
+
+- Assets: what data products exist
+- Jobs: what can be executed
+- Schedules: when things should run
+- Resources: external systems like APIs, databases, or file paths
+
+Dagster uses this registry to understand the shape of the project and to power the UI.
 
 ## Asset
 
@@ -102,6 +117,7 @@ Jobs can be triggered manually, via a schedule, or via an external event.
 A schedule is a time-based trigger that launches a job automatically.
 
 It is how you say, “run this every morning” without manually clicking anything.
+
 ## Sensor
 
 A sensor is an event-driven trigger that launches a job when an external condition is met.
@@ -117,17 +133,6 @@ Examples in livestock research:
 Use a sensor when the data arrives irregularly and a fixed schedule would either miss events or run unnecessarily.
 
 My favorite pattern is to drag and drop a file into a specified folder, and have a sensor detect that file and trigger a job to process it. It's the lazy scientist's dream: just drop the file and let the orchestrator handle the rest.
-
-## Definitions
-
-`Definitions` is the top-level Dagster object where you register the pieces of your project.
-
-- Assets: what data products exist
-- Jobs: what can be executed
-- Schedules: when things should run
-- Resources: external systems like APIs, databases, or file paths
-
-Dagster uses this registry to understand the shape of the project and to power the UI.
 
 ## Project Walkthrough
 
@@ -186,19 +191,14 @@ In Dagster UI:
 2. Enable `daily_livestock_schedule`
 3. Trigger a manual tick for demonstration
 
-## Suggested Extensions
+## How I Use Dagster (My GreenFeed Data Pipeline)
 
-- Replace demo API with farm-specific endpoint
-- Add validation checks (missing fields, stale timestamp)
-- Partition by date for historical backfills
-- Store outputs in cloud object storage
-
-## Common Pitfalls
-
-- `Rscript` not found on PATH
-- R package `jsonlite` missing
-- API latency/timeouts without retries
-- Forgetting timezone assumptions in schedules
+- Download GreenFeed Data API every morning at 3:00 AM MST
+- Write raw data to CSV file in shared storage
+- Run R script to clean data (e.g., remove duplicates, standardize column names, drop erroneous values)
+- Write cleaned data to table in duckdb database
+- Run R script to enrich cleaned data with contextual metadata (ranch, species, animal class, feed type)
+- Persist enriched dataset to a second duckdb table for downstream analysis
 
 ## Recap
 
