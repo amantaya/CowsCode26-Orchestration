@@ -22,6 +22,24 @@ By the end, participants can:
 - Schedule recurring API ingestion
 - Integrate R scripts into a Python-orchestrated pipeline
 
+## What Is an Orchestrator?
+
+An orchestrator manages when work runs, what depends on what, and how failures are handled.
+
+- It connects steps into reliable pipelines
+- It schedules recurring work and retries failures
+- It gives you logs, lineage, and a UI for monitoring
+- It coordinates work, but usually does not do the heavy computation itself
+
+Popular examples:
+
+- Apache Airflow, the original widely adopted workflow orchestrator
+- Prefect, a simpler and more lightweight alternative for many teams
+- Dagster, a newer tool that focuses on data assets and developer experience
+
+Most modern orchestrators are Python-first, but that does not mean your whole workflow must be Python.
+You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline.
+
 ## 60-Minute Agenda
 
 | Time | Topic |
@@ -39,12 +57,25 @@ By the end, participants can:
 - Reproducibility is critical for scientific workflows
 - Asset lineage helps explain how datasets were produced
 - Schedules and automation reduce manual refresh work
+- Nice UI for tracing what ran, what failed, and what data changed
+- Easier to reason about than task-only workflow tools when the output dataset is the real product
+
+## Why Dagster?
+
+- Focuses on data assets, not just tasks
+- Makes dependencies between datasets explicit
+- Has a clean UI for materializations, lineage, and observability
+- Plays well with Python, while still letting you call out to R when that is the right tool
 
 ## Core Concepts
 
 ## Asset
 
-A durable data product, for example:
+A durable data product that Dagster can track over time.
+
+Think of an asset as the thing you actually care about producing, not just the code that made it.
+
+Examples:
 
 - 10 Hz Accelerometer data from ear tags
 - GPS points from virtual fence collars
@@ -52,11 +83,26 @@ A durable data product, for example:
 
 ## Job
 
-A selection of assets to execute together.
+A job is the execution plan that tells Dagster which assets or ops to run together.
+
+Use a job when you want a repeatable unit of work, such as a daily refresh or a demo pipeline.
 
 ## Schedule
 
-A cron-like trigger that runs a job automatically.
+A schedule is a time-based trigger that launches a job automatically.
+
+It is how you say, “run this every morning” without manually clicking anything.
+
+## Definitions
+
+`Definitions` is the top-level Dagster object where you register the pieces of your project.
+
+- Assets: what data products exist
+- Jobs: what can be executed
+- Schedules: when things should run
+- Resources: external systems like APIs, databases, or file paths
+
+Dagster uses this registry to understand the shape of the project and to power the UI.
 
 ## Project Walkthrough
 
