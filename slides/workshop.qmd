@@ -69,29 +69,54 @@ You can still run R scripts, SQL, shell commands, or containerized tools as step
 
 ## Core Concepts
 
+
+
 ## Asset
 
 A durable data product that Dagster can track over time.
 
 Think of an asset as the thing you actually care about producing, not just the code that made it.
 
+The actual data product could be a CSV, Parquet, or JSON file, a database table, an in-memory data frame, or even a machine learning model.
+
+**Dagster records _when_ it was produced, what _code_ produced it, and _what_ it depends on**
+
 Examples:
 
-- 10 Hz Accelerometer data from ear tags
-- GPS points from virtual fence collars
-- API data from a GreenFeed machine
+- 10 Hz Accelerometer data from ear tags stored as an in-memory data frame
+- GPS points from virtual fence collars written to a table in a database
+- API data from a GreenFeed machine downloaded to a CSV file
 
 ## Job
 
-A job is the execution plan that tells Dagster which assets or ops to run together.
+Jobs are how you run a pipeline in Dagster. A pipeline is a directed acyclic graph (DAG) of ops that produce assets.
 
-Use a job when you want a repeatable unit of work, such as a daily refresh or a demo pipeline.
+Use a job when you want a repeatable unit of work, such as a daily download from an API or a full pipeline.
+
+The key to a job is that it is _repeatable_ and _deterministic_: the same inputs should produce the same outputs.
+
+Jobs can be triggered manually, via a schedule, or via an external event.
 
 ## Schedule
 
 A schedule is a time-based trigger that launches a job automatically.
 
 It is how you say, “run this every morning” without manually clicking anything.
+## Sensor
+
+A sensor is an event-driven trigger that launches a job when an external condition is met.
+
+Instead of running on a clock, a sensor polls for something: a new file, a changed value, or an API returning fresh data.
+
+Examples in livestock research:
+
+- A new accelerometer upload appears in a shared folder
+- A GreenFeed API endpoint returns a record newer than the last ingestion
+- LoRaWAN gateway reports new data from on-farm sensors
+
+Use a sensor when the data arrives irregularly and a fixed schedule would either miss events or run unnecessarily.
+
+My favorite pattern is to drag and drop a file into a specified folder, and have a sensor detect that file and trigger a job to process it. It's the lazy scientist's dream: just drop the file and let the orchestrator handle the rest.
 
 ## Definitions
 
