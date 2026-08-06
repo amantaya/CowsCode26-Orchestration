@@ -13,12 +13,6 @@ execute:
   echo: false
 ---
 
-## Welcome
-
-### Audience
-
-Researchers building precision livestock analytics, often in R.
-
 ### Goal
 
 By the end, participants can:
@@ -44,7 +38,7 @@ By the end, participants can:
 - Data arrives continuously: sensors, GPS collars, and APIs
 - Reproducibility is critical for scientific workflows
 - Asset lineage helps explain how datasets were produced
-- Schedules and automation reduce manual refresh work and
+- Schedules and automation reduce manual refresh work
 
 ## Core Concepts
 
