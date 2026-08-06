@@ -35,6 +35,7 @@ This repository is a complete starter kit for a **1-hour Dagster workshop** aime
 2. R with `Rscript` available on PATH
 3. R package: `jsonlite`
 4. Quarto CLI (for local slide rendering)
+5. UV package manager
 
 Install R package:
 
@@ -42,21 +43,43 @@ Install R package:
 install.packages("jsonlite")
 ```
 
-## Python Setup
+Install UV (PowerShell):
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+## Environment + Dependencies (UV)
 
 ### PowerShell
 
 ```powershell
-python -m venv .venv
+uv venv
 .\.venv\Scripts\Activate.ps1
-pip install --upgrade pip
-pip install -e .
+uv sync
+```
+
+## Dagster Install and Verification
+
+Dagster is already declared in `pyproject.toml` and is installed by `uv sync`.
+
+To verify:
+
+```powershell
+uv run dagster --version
+```
+
+Optional (if you want to add/upgrade Dagster packages explicitly):
+
+```powershell
+uv add dagster dagster-webserver
+uv sync
 ```
 
 ## Start Dagster for Live Demo
 
 ```powershell
-dagster dev -m dagster_livestock_workshop.definitions
+uv run dagster dev -m dagster_livestock_workshop.definitions
 ```
 
 Dagster UI typically opens at `http://127.0.0.1:3000`.
@@ -88,7 +111,7 @@ Dagster UI typically opens at `http://127.0.0.1:3000`.
 You can run any R script through Python:
 
 ```powershell
-python run_r_subprocess.py scripts/summarize_livestock_api.R data/livestock_reference_api.json data/livestock_reference_summary.csv
+uv run python run_r_subprocess.py scripts/summarize_livestock_api.R data/livestock_reference_api.json data/livestock_reference_summary.csv
 ```
 
 ## Quarto Slides
@@ -123,3 +146,65 @@ After first push, enable GitHub Pages in repository settings:
 - 10 min: Schedule and automation
 - 10 min: Extension ideas for livestock research
 - 5 min: Q&A
+
+## First-Time Setup Checklist
+
+Use this checklist to go from clone to first successful Dagster run.
+
+1. Open PowerShell in the repository root.
+2. Verify Python is available:
+
+```powershell
+python --version
+```
+
+3. Install UV (skip if already installed):
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+4. Create and activate the virtual environment:
+
+```powershell
+uv venv
+.\.venv\Scripts\Activate.ps1
+```
+
+5. Install project dependencies (including Dagster):
+
+```powershell
+uv sync
+```
+
+6. Verify Dagster is installed:
+
+```powershell
+uv run dagster --version
+```
+
+7. Verify R and required package:
+
+```powershell
+Rscript --version
+Rscript -e "if (!requireNamespace('jsonlite', quietly=TRUE)) install.packages('jsonlite', repos='https://cloud.r-project.org')"
+```
+
+If `Rscript` is not recognized, add your R x64 bin folder to PATH (example):
+
+```powershell
+$target = 'C:\Program Files\R\R-4.5.2\bin\x64'
+$env:Path = "$target;$env:Path"
+[Environment]::SetEnvironmentVariable('Path', "$target;" + [Environment]::GetEnvironmentVariable('Path','User'), 'User')
+```
+
+Then open a new terminal and re-run `Rscript --version`.
+
+8. Start Dagster:
+
+```powershell
+uv run dagster dev -m dagster_livestock_workshop.definitions
+```
+
+9. In Dagster UI, materialize `livestock_reference_api`.
+10. Materialize `r_postprocess_demo` and confirm `data/livestock_reference_summary.csv` exists.
