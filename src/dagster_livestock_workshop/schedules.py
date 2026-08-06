@@ -7,6 +7,6 @@ scheduled_livestock_job = define_asset_job(
 
 daily_livestock_schedule = ScheduleDefinition(
     job=scheduled_livestock_job,
-    cron_schedule="0 9 * * *",
+    cron_schedule="* * * * *",
     execution_timezone="UTC",
 )
