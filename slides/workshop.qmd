@@ -31,14 +31,14 @@ An orchestrator manages when work runs, what depends on what, and how failures a
 - It gives you logs, lineage, and a UI for monitoring
 - It coordinates work, but usually does not do the heavy computation itself
 
-Popular examples:
+## Popular examples:
 
 - Apache Airflow, the original widely adopted workflow orchestrator
 - Prefect, a simpler and more lightweight alternative for many teams
 - Dagster, a newer tool that focuses on data assets and developer experience
 
 Most modern orchestrators are Python-first, but that does not mean your whole workflow must be Python.
-You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline.
+You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline. Think of Python as the "glue" that connects your existing tools into a repeatable, observable workflow.
 
 ## 60-Minute Agenda
 
