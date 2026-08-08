@@ -18,6 +18,14 @@ def _extract_output_csv(stdout: str, fallback: Path) -> str:
     return stdout.split(marker, maxsplit=1)[1].strip()
 
 
+def _extract_output_png(stdout: str, fallback: Path) -> str:
+    marker = "OUTPUT_PNG="
+    if marker not in stdout:
+        return str(fallback)
+
+    return stdout.split(marker, maxsplit=1)[1].strip()
+
+
 def _find_accelerometer_files(root: Path | None = None) -> list[Path]:
     """Return all accelerometer CSV files beneath the provided directory."""
     data_root = root or DATA_DIR
@@ -66,6 +74,26 @@ def movement_intensity(context: AssetExecutionContext) -> MaterializeResult:
         metadata={
             "input_dir": str(data_dir),
             "output_db": str(output_db),
+            "r_stdout": stdout,
+        }
+    )
+
+
+@asset(deps=[movement_intensity])
+def movement_intensity_plot(context: AssetExecutionContext) -> MaterializeResult:
+    """Create a plot from the movement-intensity summary table."""
+    output_db = DATA_DIR / "accelerometer.duckdb"
+    output_plot = DATA_DIR / "movement_intensity.png"
+    script_path = SCRIPTS_DIR / "plot_movement_intensity.R"
+
+    stdout = run_r_script(script_path, [str(output_db), str(output_plot)])
+    actual_output_path = _extract_output_png(stdout, output_plot)
+    context.log.info("R output: %s", stdout)
+
+    return MaterializeResult(
+        metadata={
+            "output_db": str(output_db),
+            "output_png": actual_output_path,
             "r_stdout": stdout,
         }
     )
