@@ -48,7 +48,7 @@ weather_refresh_schedule = ScheduleDefinition(
 
 @sensor(
     job=accelerometer_ingest_job,
-    minimum_interval_seconds=15,
+    minimum_interval_seconds=5,
     default_status=DefaultSensorStatus.STOPPED,
 )
 def ingest_csv_sensor(context: SensorEvaluationContext):
