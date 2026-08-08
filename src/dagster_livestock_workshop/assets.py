@@ -1,8 +1,5 @@
-import json
-from datetime import datetime, timezone
 from pathlib import Path
 
-import requests
 from dagster import AssetExecutionContext, MaterializeResult, asset
 
 from .r_runner import run_r_script
@@ -12,14 +9,60 @@ DATA_DIR = REPO_ROOT / "data"
 SCRIPTS_DIR = REPO_ROOT / "scripts"
 
 
-def _write_json(payload: dict, file_name: str) -> Path:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = DATA_DIR / file_name
-    output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    return output_path
+def _find_accelerometer_files(root: Path | None = None) -> list[Path]:
+    """Return all accelerometer CSV files beneath the provided directory."""
+    data_root = root or DATA_DIR
+    return sorted(
+        path
+        for path in data_root.rglob("*")
+        if path.is_file() and path.suffix.lower() == ".csv"
+    )
 
 
-@asset(group_name="api_demo")
+@asset(group_name="workshop_data")
+def accelerometer_data_to_duckdb(context: AssetExecutionContext) -> MaterializeResult:
+    """Read accelerometer CSV files and write them to a DuckDB table."""
+    data_dir = DATA_DIR / "Steer327_060916"
+    output_db = DATA_DIR / "accelerometer.duckdb"
+    script_path = SCRIPTS_DIR / "write_data_duckdb.R"
+
+    csv_files = _find_accelerometer_files(data_dir)
+    if not csv_files:
+        raise RuntimeError(f"No accelerometer CSV files found in {data_dir}")
+
+    stdout = run_r_script(script_path, [str(data_dir), str(output_db), "all"])
+    context.log.info("R output: %s", stdout)
+
+    return MaterializeResult(
+        metadata={
+            "input_dir": str(data_dir),
+            "input_files": len(csv_files),
+            "output_db": str(output_db),
+            "r_stdout": stdout,
+        }
+    )
+
+
+@asset(group_name="workshop_data", deps=[accelerometer_data_to_duckdb])
+def movement_intensity(context: AssetExecutionContext) -> MaterializeResult:
+    """Calculate movement-intensity values from the ingested accelerometer data."""
+    data_dir = DATA_DIR / "Steer327_060916"
+    output_db = DATA_DIR / "accelerometer.duckdb"
+    script_path = SCRIPTS_DIR / "write_data_duckdb.R"
+
+    stdout = run_r_script(script_path, [str(data_dir), str(output_db), "summarize"])
+    context.log.info("R output: %s", stdout)
+
+    return MaterializeResult(
+        metadata={
+            "input_dir": str(data_dir),
+            "output_db": str(output_db),
+            "r_stdout": stdout,
+        }
+    )
+
+
+@asset(group_name="weather")
 def weather_api_demo(context: AssetExecutionContext) -> MaterializeResult:
     """Fetch a weather snapshot from Open-Meteo without an API key."""
     output_path = DATA_DIR / "weather_open_meteo.csv"
@@ -37,54 +80,7 @@ def weather_api_demo(context: AssetExecutionContext) -> MaterializeResult:
     )
 
 
-@asset(group_name="api_demo")
-def livestock_reference_api(context: AssetExecutionContext) -> MaterializeResult:
-    """Simple one-shot API materialization for live demo."""
-    response = requests.get("https://httpbin.org/json", timeout=20)
-    response.raise_for_status()
-    payload = response.json()
-
-    stamped = {
-        "fetched_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source": "https://httpbin.org/json",
-        "payload": payload,
-    }
-    output_path = _write_json(stamped, "livestock_reference_api.json")
-
-    context.log.info("Saved API response to %s", output_path)
-    return MaterializeResult(
-        metadata={
-            "recorded_at": stamped["fetched_at_utc"],
-            "output_file": str(output_path),
-        }
-    )
-
-
-@asset(group_name="api_demo")
-def scheduled_livestock_api(context: AssetExecutionContext) -> MaterializeResult:
-    """Asset that will be materialized by a schedule."""
-    response = requests.get("https://httpbin.org/uuid", timeout=20)
-    response.raise_for_status()
-    payload = response.json()
-
-    stamped = {
-        "fetched_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source": "https://httpbin.org/uuid",
-        "payload": payload,
-    }
-    output_path = _write_json(stamped, "scheduled_livestock_api.json")
-
-    context.log.info("Saved scheduled API response to %s", output_path)
-    return MaterializeResult(
-        metadata={
-            "recorded_at": stamped["fetched_at_utc"],
-            "uuid": payload.get("uuid", "unknown"),
-            "output_file": str(output_path),
-        }
-    )
-
-
-@asset(group_name="api_demo", deps=[weather_api_demo])
+@asset(group_name="weather", deps=[weather_api_demo])
 def r_postprocess_demo(context: AssetExecutionContext) -> MaterializeResult:
     """Call an R script from Python to summarize the weather snapshot into CSV."""
     input_csv = DATA_DIR / "weather_open_meteo.csv"
