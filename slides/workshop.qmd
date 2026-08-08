@@ -4,11 +4,13 @@ subtitle: "1-Hour Hands-On Workshop"
 author: "By Andrew Antaya"
 format:
   revealjs:
-    theme: [default]
-    transition: slide
+    theme: simple
     slide-number: true
+    toc: false
+    transition: fade
     incremental: true
-    chalkboard: true
+    controls: true
+    output-file: index.html
 execute:
   echo: false
 ---
