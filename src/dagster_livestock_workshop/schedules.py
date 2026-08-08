@@ -31,7 +31,11 @@ def _sensor_run_key(changed_files: list[str]) -> str:
 
 accelerometer_ingest_job = define_asset_job(
     "accelerometer_ingest_job",
-    selection=["accelerometer_data_to_duckdb", "movement_intensity"],
+    selection=[
+        "accelerometer_data_to_duckdb",
+        "movement_intensity",
+        "movement_intensity_plot",
+    ],
 )
 
 weather_refresh_job = define_asset_job(
