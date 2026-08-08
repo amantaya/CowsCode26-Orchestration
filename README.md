@@ -58,9 +58,19 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ### PowerShell
 
+On Windows:
+
 ```powershell
 uv venv
 .\.venv\Scripts\Activate.ps1
+uv sync
+```
+
+On Mac/Linux:
+
+```shell
+uv venv
+source .venv/bin/activate
 uv sync
 ```
 
