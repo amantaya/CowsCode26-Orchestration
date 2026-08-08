@@ -8,9 +8,10 @@ This repository is a complete starter kit for a **1-hour workshop** aimed at R-f
 
 ## What is Included
 
-- Dagster scaffold with assets, jobs, and schedules
-- weather API materialization demo asset
-- Scheduled API ingestion demo asset
+- Dagster scaffold with assets, jobs, schedules, and a file-watching sensor
+- Accelerometer CSV ingestion pipeline (DuckDB-backed)
+- Movement-intensity summarisation and PNG plot generation
+- Weather API materialization demo asset
 - Python helper to run R scripts through subprocess (`Rscript`)
 - Quarto slideshow source for workshop delivery
 - GitHub Pages workflow to publish workshop content
@@ -25,8 +26,12 @@ This repository is a complete starter kit for a **1-hour workshop** aimed at R-f
 │  ├─ definitions.py
 │  └─ r_runner.py
 ├─ scripts/
+│  ├─ write_data_duckdb.R
+│  ├─ plot_movement_intensity.R
 │  ├─ fetch_weather_open_meteo.R
 │  └─ summarize_weather_open_meteo.R
+├─ data/
+│  └─ Ingest/          ← drop accelerometer CSVs here
 ├─ slides/
 │  └─ workshop.qmd
 ├─ run_r_subprocess.py
@@ -38,14 +43,14 @@ This repository is a complete starter kit for a **1-hour workshop** aimed at R-f
 
 1. Python 3.10+
 2. R with `Rscript` available on PATH
-3. R package: `jsonlite`
+3. R packages: `duckdb`, `DBI`
 4. Quarto CLI (for local slide rendering)
 5. UV package manager
 
-Install R package:
+Install R packages:
 
 ```r
-install.packages("jsonlite")
+install.packages(c("duckdb", "DBI"))
 ```
 
 Install UV (PowerShell):
@@ -101,32 +106,52 @@ Dagster UI typically opens at `http://127.0.0.1:3000`.
 
 ## Live Demo Plan
 
-### Demo 1: Fetch Weather Data from Open-Meteo
+### Demo 1: Ingest Accelerometer Data to DuckDB
+
+1. Copy accelerometer CSV files into `data/Ingest/`.
+2. In Dagster UI, open asset `accelerometer_data_to_duckdb`.
+3. Click **Materialize**.
+4. Show metadata and output file: `data/accelerometer.duckdb`.
+
+### Demo 2: Calculate and Plot Movement Intensity
+
+1. Open asset `movement_intensity` (depends on `accelerometer_data_to_duckdb`).
+2. Materialize it — runs `write_data_duckdb.R` in summarize mode.
+3. Open asset `movement_intensity_plot` (depends on `movement_intensity`).
+4. Materialize it — runs `plot_movement_intensity.R` and writes `data/movement_intensity.png`.
+5. Explain the Python → subprocess → `Rscript` bridge in `r_runner.py`.
+
+### Demo 3: Fetch Weather Data from Open-Meteo
 
 1. In Dagster UI, open asset `weather_api_demo`.
 2. Click **Materialize**.
 3. Show metadata and output file: `data/weather_open_meteo.csv`.
 
-### Demo 2: Execute R Script via Dagster Asset
+### Demo 4: Sensor-Driven Pipeline
 
-1. Open asset `r_postprocess_demo`.
-2. Materialize it (it depends on `weather_api_demo`).
-3. Show generated file: `data/weather_open_meteo_summary.csv`.
-4. Explain Python -> subprocess -> `Rscript` bridge in `r_runner.py`.
+1. Open sensor `ingest_csv_sensor` in Dagster UI.
+2. Enable the sensor (default status is **STOPPED**).
+3. Drop a new CSV file into `data/Ingest/` and observe the sensor trigger `accelerometer_ingest_job` automatically.
 
-### Demo 3: Scheduled API Call
+### Demo 5: Scheduled Weather Refresh
 
-1. Open schedule `daily_livestock_schedule` in Dagster UI.
-2. Enable the schedule.
+1. Open schedule `weather_refresh_schedule` in Dagster UI.
+2. Enable the schedule (runs `weather_refresh_job` every minute).
 3. Trigger a manual tick in the UI for immediate demonstration.
-4. Show output file: `data/scheduled_livestock_api.json`.
 
 ## Standalone R Subprocess Script
 
-You can run any R script through Python:
+You can run any R script through Python directly:
 
 ```powershell
-uv run python run_r_subprocess.py scripts/summarize_weather_open_meteo.R data/weather_open_meteo.csv data/weather_open_meteo_summary.csv
+# Ingest CSVs into DuckDB
+uv run python run_r_subprocess.py scripts/write_data_duckdb.R data/Ingest data/accelerometer.duckdb all
+
+# Summarize into movement_intensity table
+uv run python run_r_subprocess.py scripts/write_data_duckdb.R data/Ingest data/accelerometer.duckdb summarize
+
+# Generate movement intensity plot
+uv run python run_r_subprocess.py scripts/plot_movement_intensity.R data/accelerometer.duckdb data/movement_intensity.png
 ```
 
 ## Quarto Slides
@@ -156,10 +181,10 @@ After first push, enable GitHub Pages in repository settings:
 ## Suggested Workshop Timing (1 Hour)
 
 - 10 min: Orchestration foundations and Dagster concepts
-- 15 min: Materialize API asset
-- 10 min: R subprocess integration
-- 10 min: Schedule and automation
-- 10 min: Extension ideas for livestock research
+- 15 min: Ingest accelerometer CSVs to DuckDB
+- 10 min: Movement-intensity summary and plot
+- 10 min: Sensor-driven pipeline automation
+- 10 min: Scheduled weather API refresh
 - 5 min: Q&A
 
 ## First-Time Setup Checklist
@@ -198,11 +223,12 @@ uv sync
 uv run dagster --version
 ```
 
-7. Verify R and required package:
+7. Verify R and required packages:
 
 ```powershell
 Rscript --version
-Rscript -e "if (!requireNamespace('jsonlite', quietly=TRUE)) install.packages('jsonlite', repos='https://cloud.r-project.org')"
+Rscript -e "if (!requireNamespace('duckdb', quietly=TRUE)) install.packages('duckdb', repos='https://cloud.r-project.org')"
+Rscript -e "if (!requireNamespace('DBI', quietly=TRUE)) install.packages('DBI', repos='https://cloud.r-project.org')"
 ```
 
 If `Rscript` is not recognized, add your R x64 bin folder to PATH (example):
@@ -221,5 +247,5 @@ Then open a new terminal and re-run `Rscript --version`.
 uv run dagster dev -m dagster_livestock_workshop.definitions
 ```
 
-9. In Dagster UI, materialize `weather_api_demo`.
-10. Materialize `r_postprocess_demo` and confirm `data/weather_open_meteo_summary.csv` exists.
+9. Copy accelerometer CSV files into `data/Ingest/` and materialize `accelerometer_data_to_duckdb`.
+10. Materialize `movement_intensity` and then `movement_intensity_plot` and confirm `data/movement_intensity.png` exists.
