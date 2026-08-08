@@ -18,7 +18,7 @@ execute:
 By the end, participants can:
 
 - Explain core Dagster concepts (assets, jobs, schedules)
-- Materialize an API-based asset
+- Materialize a weather API asset
 - Schedule recurring API ingestion
 - Integrate R scripts into a Python-orchestrated pipeline
 
@@ -37,6 +37,8 @@ An orchestrator manages when work runs, what depends on what, and how failures a
 - Prefect, a simpler and more lightweight alternative for many teams
 - Dagster, a newer tool that focuses on data assets and developer experience
 
+## Why Python?
+
 Most modern orchestrators are Python-first, but that does not mean your whole workflow must be Python.
 You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline. Think of Python as the "glue" that connects your existing tools into a repeatable, observable workflow.
 
@@ -46,7 +48,7 @@ You can still run R scripts, SQL, shell commands, or containerized tools as step
 |---|---|
 | 0:00-0:10 | Why orchestration in livestock research? |
 | 0:10-0:20 | Dagster mental model |
-| 0:20-0:35 | Live demo: materialize API asset |
+| 0:20-0:35 | Live demo: fetch weather API data |
 | 0:35-0:45 | Live demo: run R script from Dagster |
 | 0:45-0:55 | Live demo: scheduled API call |
 | 0:55-1:00 | Wrap-up and next steps |
@@ -142,16 +144,17 @@ src/dagster_livestock_workshop/
   schedules.py
   definitions.py
 scripts/
-  summarize_livestock_api.R
+  fetch_weather_open_meteo.R
+  summarize_weather_open_meteo.R
 run_r_subprocess.py
 ```
 
-## Live Demo 1: Materialize API Asset
+## Live Demo 1: Fetch Weather Data from Open-Meteo
 
 1. Start Dagster UI.
-2. Find asset `livestock_reference_api`.
+2. Find asset `weather_api_demo`.
 3. Click Materialize.
-4. Inspect metadata and generated JSON file.
+4. Inspect metadata and generated CSV file.
 
 ```bash
 pip install -e .
@@ -160,6 +163,7 @@ dagster dev -m dagster_livestock_workshop.definitions
 
 ## Demo 1 Discussion
 
+- Open-Meteo is useful here because it does not require an API key.
 - This pattern can be used to ingest data from APIs, CSV files, or databases.
 - Materializations are timestamped and traceable.
 - Data is persisted under `data/`.
@@ -168,9 +172,9 @@ dagster dev -m dagster_livestock_workshop.definitions
 
 Asset: `r_postprocess_demo`
 
-- Depends on `livestock_reference_api`
-- Calls `Rscript scripts/summarize_livestock_api.R`
-- Writes `data/livestock_reference_summary.csv`
+- Depends on `weather_api_demo`
+- Calls `Rscript scripts/summarize_weather_open_meteo.R`
+- Writes `data/weather_open_meteo_summary.csv`
 
 ## Why This Matters for R-First Teams
 
@@ -206,7 +210,7 @@ You now have:
 
 - A Dagster scaffold ready for demos
 - A Python subprocess bridge to R
-- A materialized API asset pattern
+- A materialized weather API asset pattern
 - A scheduled ingestion pattern
 
 ## Next Steps
