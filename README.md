@@ -2,8 +2,6 @@
 
 ## Course Content
 
-The course content is available here: https://amantaya.github.io/CowsCode26-Orchestration/
-
 The workshop slides are available here: https://amantaya.github.io/CowsCode26-Orchestration/slides/workshop.html#/title-slide
 
 This repository is a complete starter kit for a **1-hour workshop** aimed at R-first research teams working with Precision Livestock Technology (PLT).
