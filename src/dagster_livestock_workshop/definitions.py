@@ -1,20 +1,20 @@
 from dagster import Definitions
 
 from .assets import (
-    livestock_reference_api,
+    accelerometer_data_to_duckdb,
+    movement_intensity,
     r_postprocess_demo,
-    scheduled_livestock_api,
     weather_api_demo,
 )
-from .schedules import daily_livestock_schedule, scheduled_livestock_job
+from .schedules import weather_refresh_job, weather_refresh_schedule
 
 defs = Definitions(
     assets=[
-        livestock_reference_api,
-        scheduled_livestock_api,
+        accelerometer_data_to_duckdb,
+        movement_intensity,
         r_postprocess_demo,
         weather_api_demo,
     ],
-    jobs=[scheduled_livestock_job],
-    schedules=[daily_livestock_schedule],
+    jobs=[weather_refresh_job],
+    schedules=[weather_refresh_schedule],
 )
