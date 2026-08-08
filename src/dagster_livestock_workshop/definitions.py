@@ -5,7 +5,12 @@ from .assets import (
     movement_intensity,
     weather_api_demo,
 )
-from .schedules import weather_refresh_job, weather_refresh_schedule
+from .schedules import (
+    accelerometer_ingest_job,
+    ingest_csv_sensor,
+    weather_refresh_job,
+    weather_refresh_schedule,
+)
 
 defs = Definitions(
     assets=[
@@ -13,6 +18,7 @@ defs = Definitions(
         movement_intensity,
         weather_api_demo,
     ],
-    jobs=[weather_refresh_job],
+    jobs=[accelerometer_ingest_job, weather_refresh_job],
     schedules=[weather_refresh_schedule],
+    sensors=[ingest_csv_sensor],
 )
