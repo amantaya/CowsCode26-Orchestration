@@ -1,12 +1,12 @@
 from dagster import ScheduleDefinition, define_asset_job
 
-scheduled_livestock_job = define_asset_job(
-    "scheduled_livestock_job",
-    selection=["scheduled_livestock_api"],
+weather_refresh_job = define_asset_job(
+    "weather_refresh_job",
+    selection=["weather_api_demo"],
 )
 
-daily_livestock_schedule = ScheduleDefinition(
-    job=scheduled_livestock_job,
+weather_refresh_schedule = ScheduleDefinition(
+    job=weather_refresh_job,
     cron_schedule="* * * * *",
     execution_timezone="UTC",
 )
