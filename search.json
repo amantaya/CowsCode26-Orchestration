@@ -4,14 +4,28 @@
     "href": "slides/workshop.html#what-is-an-orchestrator",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "What Is an Orchestrator?",
-    "text": "What Is an Orchestrator?\nAn orchestrator manages when work runs, what depends on what, and how failures are handled.\n\nIt connects steps into reliable pipelines\nIt schedules recurring work and retries failures\nIt gives you logs, lineage, and a UI for monitoring\nIt coordinates work, but usually does not do the heavy computation itself\n\nPopular examples:\n\nApache Airflow, the original widely adopted workflow orchestrator\nPrefect, a simpler and more lightweight alternative for many teams\nDagster, a newer tool that focuses on data assets and developer experience\n\nMost modern orchestrators are Python-first, but that does not mean your whole workflow must be Python. You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline."
+    "text": "What Is an Orchestrator?\nAn orchestrator manages when work runs, what depends on what, and how failures are handled.\n\nIt connects steps into reliable pipelines\nIt schedules recurring work and retries failures\nIt gives you logs, lineage, and a UI for monitoring\nIt coordinates work, but usually does not do the heavy computation itself"
+  },
+  {
+    "objectID": "slides/workshop.html#popular-examples",
+    "href": "slides/workshop.html#popular-examples",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Popular examples:",
+    "text": "Popular examples:\n\nApache Airflow, the original widely adopted workflow orchestrator\nPrefect, a simpler and more lightweight alternative for many teams\nDagster, a newer tool that focuses on data assets and developer experience"
+  },
+  {
+    "objectID": "slides/workshop.html#why-python",
+    "href": "slides/workshop.html#why-python",
+    "title": "Dagster Fundamentals for Precision Livestock Technology",
+    "section": "Why Python?",
+    "text": "Why Python?\nMost modern orchestrators are Python-first, but that does not mean your whole workflow must be Python. You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline. Think of Python as the “glue” that connects your existing tools into a repeatable, observable workflow."
   },
   {
     "objectID": "slides/workshop.html#minute-agenda",
     "href": "slides/workshop.html#minute-agenda",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "60-Minute Agenda",
-    "text": "60-Minute Agenda\n\n\n\nTime\nTopic\n\n\n\n\n0:00-0:10\nWhy orchestration in livestock research?\n\n\n0:10-0:20\nDagster mental model\n\n\n0:20-0:35\nLive demo: materialize API asset\n\n\n0:35-0:45\nLive demo: run R script from Dagster\n\n\n0:45-0:55\nLive demo: scheduled API call\n\n\n0:55-1:00\nWrap-up and next steps"
+    "text": "60-Minute Agenda\n\n\n\nTime\nTopic\n\n\n\n\n0:00-0:10\nWhy orchestration in livestock research?\n\n\n0:10-0:20\nDagster mental model\n\n\n0:20-0:35\nLive demo: fetch weather API data\n\n\n0:35-0:45\nLive demo: run R script from Dagster\n\n\n0:45-0:55\nLive demo: scheduled API call\n\n\n0:55-1:00\nWrap-up and next steps"
   },
   {
     "objectID": "slides/workshop.html#why-dagster-for-livestock-research",
@@ -74,28 +88,28 @@
     "href": "slides/workshop.html#project-walkthrough",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Project Walkthrough",
-    "text": "Project Walkthrough\nsrc/dagster_livestock_workshop/\n  assets.py\n  schedules.py\n  definitions.py\nscripts/\n  summarize_livestock_api.R\nrun_r_subprocess.py"
+    "text": "Project Walkthrough\nsrc/dagster_livestock_workshop/\n  assets.py\n  schedules.py\n  definitions.py\nscripts/\n  fetch_weather_open_meteo.R\n  summarize_weather_open_meteo.R\nrun_r_subprocess.py"
   },
   {
-    "objectID": "slides/workshop.html#live-demo-1-materialize-api-asset",
-    "href": "slides/workshop.html#live-demo-1-materialize-api-asset",
+    "objectID": "slides/workshop.html#live-demo-1-fetch-weather-data-from-open-meteo",
+    "href": "slides/workshop.html#live-demo-1-fetch-weather-data-from-open-meteo",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
-    "section": "Live Demo 1: Materialize API Asset",
-    "text": "Live Demo 1: Materialize API Asset\n\nStart Dagster UI.\nFind asset livestock_reference_api.\nClick Materialize.\nInspect metadata and generated JSON file.\n\npip install -e .\ndagster dev -m dagster_livestock_workshop.definitions"
+    "section": "Live Demo 1: Fetch Weather Data from Open-Meteo",
+    "text": "Live Demo 1: Fetch Weather Data from Open-Meteo\n\nStart Dagster UI.\nFind asset weather_api_demo.\nClick Materialize.\nInspect metadata and generated CSV file.\n\npip install -e .\ndagster dev -m dagster_livestock_workshop.definitions"
   },
   {
     "objectID": "slides/workshop.html#demo-1-discussion",
     "href": "slides/workshop.html#demo-1-discussion",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Demo 1 Discussion",
-    "text": "Demo 1 Discussion\n\nThis pattern can ingest weather, market, or disease surveillance endpoints.\nMaterializations are timestamped and traceable.\nData is persisted under data/."
+    "text": "Demo 1 Discussion\n\nOpen-Meteo is useful here because it does not require an API key.\nThis pattern can be used to ingest data from APIs, CSV files, or databases.\nMaterializations are timestamped and traceable.\nData is persisted under data/."
   },
   {
     "objectID": "slides/workshop.html#live-demo-2-run-r-via-python-subprocess",
     "href": "slides/workshop.html#live-demo-2-run-r-via-python-subprocess",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Live Demo 2: Run R via Python Subprocess",
-    "text": "Live Demo 2: Run R via Python Subprocess\nAsset: r_postprocess_demo\n\nDepends on livestock_reference_api\nCalls Rscript scripts/summarize_livestock_api.R\nWrites data/livestock_reference_summary.csv"
+    "text": "Live Demo 2: Run R via Python Subprocess\nAsset: r_postprocess_demo\n\nDepends on weather_api_demo\nCalls Rscript scripts/summarize_weather_open_meteo.R\nWrites data/weather_open_meteo_summary.csv"
   },
   {
     "objectID": "slides/workshop.html#why-this-matters-for-r-first-teams",
@@ -123,7 +137,7 @@
     "href": "slides/workshop.html#recap",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Recap",
-    "text": "Recap\nYou now have:\n\nA Dagster scaffold ready for demos\nA Python subprocess bridge to R\nA materialized API asset pattern\nA scheduled ingestion pattern"
+    "text": "Recap\nYou now have:\n\nA Dagster scaffold ready for demos\nA Python subprocess bridge to R\nA materialized weather API asset pattern\nA scheduled ingestion pattern"
   },
   {
     "objectID": "slides/workshop.html#next-steps",

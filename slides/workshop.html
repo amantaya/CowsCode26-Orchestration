@@ -9,7 +9,7 @@
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.10.18">
 
-  <meta name="author" content="By Andrew Antaya and My AI Assistant">
+  <meta name="author" content="By Andrew Antaya">
   <title>Dagster Fundamentals for Precision Livestock Tech – Dagster Fundamentals for Precision Livestock Technology</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-By Andrew Antaya and My AI Assistant
+By Andrew Antaya
 </div>
 </div>
 </div>
@@ -219,7 +219,7 @@ By Andrew Antaya and My AI Assistant
 <p>By the end, participants can:</p>
 <ul>
 <li class="fragment">Explain core Dagster concepts (assets, jobs, schedules)</li>
-<li class="fragment">Materialize an API-based asset</li>
+<li class="fragment">Materialize a weather API asset</li>
 <li class="fragment">Schedule recurring API ingestion</li>
 <li class="fragment">Integrate R scripts into a Python-orchestrated pipeline</li>
 </ul>
@@ -233,13 +233,18 @@ By Andrew Antaya and My AI Assistant
 <li class="fragment">It gives you logs, lineage, and a UI for monitoring</li>
 <li class="fragment">It coordinates work, but usually does not do the heavy computation itself</li>
 </ul>
-<p>Popular examples:</p>
+</section>
+<section id="popular-examples" class="slide level2">
+<h2>Popular examples:</h2>
 <ul>
 <li class="fragment">Apache Airflow, the original widely adopted workflow orchestrator</li>
 <li class="fragment">Prefect, a simpler and more lightweight alternative for many teams</li>
 <li class="fragment">Dagster, a newer tool that focuses on data assets and developer experience</li>
 </ul>
-<p>Most modern orchestrators are Python-first, but that does not mean your whole workflow must be Python. You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline.</p>
+</section>
+<section id="why-python" class="slide level2">
+<h2>Why Python?</h2>
+<p>Most modern orchestrators are Python-first, but that does not mean your whole workflow must be Python. You can still run R scripts, SQL, shell commands, or containerized tools as steps in an orchestrated pipeline. Think of Python as the “glue” that connects your existing tools into a repeatable, observable workflow.</p>
 </section>
 <section id="minute-agenda" class="slide level2">
 <h2>60-Minute Agenda</h2>
@@ -261,7 +266,7 @@ By Andrew Antaya and My AI Assistant
 </tr>
 <tr class="odd">
 <td>0:20-0:35</td>
-<td>Live demo: materialize API asset</td>
+<td>Live demo: fetch weather API data</td>
 </tr>
 <tr class="even">
 <td>0:35-0:45</td>
@@ -364,16 +369,17 @@ By Andrew Antaya and My AI Assistant
 <span id="cb1-3"><a aria-label="3"></a>  schedules.py</span>
 <span id="cb1-4"><a aria-label="4"></a>  definitions.py</span>
 <span id="cb1-5"><a aria-label="5"></a>scripts/</span>
-<span id="cb1-6"><a aria-label="6"></a>  summarize_livestock_api.R</span>
-<span id="cb1-7"><a aria-label="7"></a>run_r_subprocess.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a aria-label="6"></a>  fetch_weather_open_meteo.R</span>
+<span id="cb1-7"><a aria-label="7"></a>  summarize_weather_open_meteo.R</span>
+<span id="cb1-8"><a aria-label="8"></a>run_r_subprocess.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="live-demo-1-materialize-api-asset" class="slide level2">
-<h2>Live Demo 1: Materialize API Asset</h2>
+<section id="live-demo-1-fetch-weather-data-from-open-meteo" class="slide level2">
+<h2>Live Demo 1: Fetch Weather Data from Open-Meteo</h2>
 <ol type="1">
 <li class="fragment">Start Dagster UI.</li>
-<li class="fragment">Find asset <code>livestock_reference_api</code>.</li>
+<li class="fragment">Find asset <code>weather_api_demo</code>.</li>
 <li class="fragment">Click Materialize.</li>
-<li class="fragment">Inspect metadata and generated JSON file.</li>
+<li class="fragment">Inspect metadata and generated CSV file.</li>
 </ol>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a aria-label="1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span>
 <span id="cb2-2"><a aria-label="2"></a><span class="ex">dagster</span> dev <span class="at">-m</span> dagster_livestock_workshop.definitions</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -381,7 +387,8 @@ By Andrew Antaya and My AI Assistant
 <section id="demo-1-discussion" class="slide level2">
 <h2>Demo 1 Discussion</h2>
 <ul>
-<li class="fragment">This pattern can ingest weather, market, or disease surveillance endpoints.</li>
+<li class="fragment">Open-Meteo is useful here because it does not require an API key.</li>
+<li class="fragment">This pattern can be used to ingest data from APIs, CSV files, or databases.</li>
 <li class="fragment">Materializations are timestamped and traceable.</li>
 <li class="fragment">Data is persisted under <code>data/</code>.</li>
 </ul>
@@ -390,9 +397,9 @@ By Andrew Antaya and My AI Assistant
 <h2>Live Demo 2: Run R via Python Subprocess</h2>
 <p>Asset: <code>r_postprocess_demo</code></p>
 <ul>
-<li class="fragment">Depends on <code>livestock_reference_api</code></li>
-<li class="fragment">Calls <code>Rscript scripts/summarize_livestock_api.R</code></li>
-<li class="fragment">Writes <code>data/livestock_reference_summary.csv</code></li>
+<li class="fragment">Depends on <code>weather_api_demo</code></li>
+<li class="fragment">Calls <code>Rscript scripts/summarize_weather_open_meteo.R</code></li>
+<li class="fragment">Writes <code>data/weather_open_meteo_summary.csv</code></li>
 </ul>
 </section>
 <section id="why-this-matters-for-r-first-teams" class="slide level2">
@@ -434,7 +441,7 @@ By Andrew Antaya and My AI Assistant
 <ul>
 <li class="fragment">A Dagster scaffold ready for demos</li>
 <li class="fragment">A Python subprocess bridge to R</li>
-<li class="fragment">A materialized API asset pattern</li>
+<li class="fragment">A materialized weather API asset pattern</li>
 <li class="fragment">A scheduled ingestion pattern</li>
 </ul>
 </section>
