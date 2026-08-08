@@ -19,7 +19,7 @@ def _find_accelerometer_files(root: Path | None = None) -> list[Path]:
     )
 
 
-@asset(group_name="workshop_data")
+@asset
 def accelerometer_data_to_duckdb(context: AssetExecutionContext) -> MaterializeResult:
     """Read accelerometer CSV files and write them to a DuckDB table."""
     data_dir = DATA_DIR / "Steer327_060916"
@@ -43,7 +43,7 @@ def accelerometer_data_to_duckdb(context: AssetExecutionContext) -> MaterializeR
     )
 
 
-@asset(group_name="workshop_data", deps=[accelerometer_data_to_duckdb])
+@asset(deps=[accelerometer_data_to_duckdb])
 def movement_intensity(context: AssetExecutionContext) -> MaterializeResult:
     """Calculate movement-intensity values from the ingested accelerometer data."""
     data_dir = DATA_DIR / "Steer327_060916"
@@ -62,7 +62,7 @@ def movement_intensity(context: AssetExecutionContext) -> MaterializeResult:
     )
 
 
-@asset(group_name="weather")
+@asset
 def weather_api_demo(context: AssetExecutionContext) -> MaterializeResult:
     """Fetch a weather snapshot from Open-Meteo without an API key."""
     output_path = DATA_DIR / "weather_open_meteo.csv"
@@ -80,7 +80,7 @@ def weather_api_demo(context: AssetExecutionContext) -> MaterializeResult:
     )
 
 
-@asset(group_name="weather", deps=[weather_api_demo])
+@asset(deps=[weather_api_demo])
 def r_postprocess_demo(context: AssetExecutionContext) -> MaterializeResult:
     """Call an R script from Python to summarize the weather snapshot into CSV."""
     input_csv = DATA_DIR / "weather_open_meteo.csv"
