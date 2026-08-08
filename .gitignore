@@ -7,8 +7,10 @@ __pycache__/
 .storage/
 .pytest_cache/
 /docs/
-/data/
+
 .tmp*
+
+*.duckdb
 
 /.quarto/
 site_libs/
