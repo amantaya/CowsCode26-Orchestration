@@ -20,6 +20,24 @@ def _write_json(payload: dict, file_name: str) -> Path:
 
 
 @asset(group_name="api_demo")
+def weather_api_demo(context: AssetExecutionContext) -> MaterializeResult:
+    """Fetch a weather snapshot from Open-Meteo without an API key."""
+    output_path = DATA_DIR / "weather_open_meteo.csv"
+    script_path = SCRIPTS_DIR / "fetch_weather_open_meteo.R"
+
+    stdout = run_r_script(script_path, [str(output_path)])
+    context.log.info("R output: %s", stdout)
+
+    return MaterializeResult(
+        metadata={
+            "source": "https://open-meteo.com/",
+            "output_csv": str(output_path),
+            "r_stdout": stdout,
+        }
+    )
+
+
+@asset(group_name="api_demo")
 def livestock_reference_api(context: AssetExecutionContext) -> MaterializeResult:
     """Simple one-shot API materialization for live demo."""
     response = requests.get("https://httpbin.org/json", timeout=20)
@@ -66,19 +84,19 @@ def scheduled_livestock_api(context: AssetExecutionContext) -> MaterializeResult
     )
 
 
-@asset(group_name="api_demo", deps=[livestock_reference_api])
+@asset(group_name="api_demo", deps=[weather_api_demo])
 def r_postprocess_demo(context: AssetExecutionContext) -> MaterializeResult:
-    """Call an R script from Python to summarize a JSON file into CSV."""
-    input_json = DATA_DIR / "livestock_reference_api.json"
-    output_csv = DATA_DIR / "livestock_reference_summary.csv"
-    script_path = SCRIPTS_DIR / "summarize_livestock_api.R"
+    """Call an R script from Python to summarize the weather snapshot into CSV."""
+    input_csv = DATA_DIR / "weather_open_meteo.csv"
+    output_csv = DATA_DIR / "weather_open_meteo_summary.csv"
+    script_path = SCRIPTS_DIR / "summarize_weather_open_meteo.R"
 
-    stdout = run_r_script(script_path, [str(input_json), str(output_csv)])
+    stdout = run_r_script(script_path, [str(input_csv), str(output_csv)])
     context.log.info("R output: %s", stdout)
 
     return MaterializeResult(
         metadata={
-            "input_json": str(input_json),
+            "input_csv": str(input_csv),
             "output_csv": str(output_csv),
             "r_stdout": stdout,
         }
