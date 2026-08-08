@@ -8,12 +8,31 @@ if (length(args) < 1) {
 
 output_csv <- args[1]
 
+build_timestamped_path <- function(path) {
+    extension <- tools::file_ext(path)
+    stem <- if (nzchar(extension)) {
+        sub(paste0("\\.", extension, "$"), "", path)
+    } else {
+        path
+    }
+
+    timestamp <- format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC")
+
+    if (nzchar(extension)) {
+        paste0(stem, "_", timestamp, ".", extension)
+    } else {
+        paste0(stem, "_", timestamp)
+    }
+}
+
+output_csv <- build_timestamped_path(output_csv)
+
 if (!requireNamespace("jsonlite", quietly = TRUE)) {
     stop("Package 'jsonlite' is required. Install with install.packages('jsonlite').")
 }
 
-latitude <- 35.22
-longitude <- -101.83
+latitude <- 36.116
+longitude <- -97.058
 
 url <- paste0(
     "https://api.open-meteo.com/v1/forecast?latitude=",
@@ -37,4 +56,12 @@ weather_df <- data.frame(
 )
 
 write.csv(weather_df, output_csv, row.names = FALSE)
-cat(paste("Fetched Open-Meteo weather for", latitude, longitude, "and wrote", output_csv))
+cat(
+    sprintf(
+        "Fetched Open-Meteo weather for %s %s and wrote %s\nOUTPUT_CSV=%s\n",
+        latitude,
+        longitude,
+        output_csv,
+        output_csv
+    )
+)
