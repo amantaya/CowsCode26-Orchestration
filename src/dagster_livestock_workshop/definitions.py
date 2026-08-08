@@ -3,6 +3,7 @@ from dagster import Definitions
 from .assets import (
     accelerometer_data_to_duckdb,
     movement_intensity,
+    movement_intensity_plot,
     weather_api_demo,
 )
 from .schedules import (
@@ -16,6 +17,7 @@ defs = Definitions(
     assets=[
         accelerometer_data_to_duckdb,
         movement_intensity,
+        movement_intensity_plot,
         weather_api_demo,
     ],
     jobs=[accelerometer_ingest_job, weather_refresh_job],
