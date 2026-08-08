@@ -78,22 +78,3 @@ def weather_api_demo(context: AssetExecutionContext) -> MaterializeResult:
             "r_stdout": stdout,
         }
     )
-
-
-@asset(deps=[weather_api_demo])
-def r_postprocess_demo(context: AssetExecutionContext) -> MaterializeResult:
-    """Call an R script from Python to summarize the weather snapshot into CSV."""
-    input_csv = DATA_DIR / "weather_open_meteo.csv"
-    output_csv = DATA_DIR / "weather_open_meteo_summary.csv"
-    script_path = SCRIPTS_DIR / "summarize_weather_open_meteo.R"
-
-    stdout = run_r_script(script_path, [str(input_csv), str(output_csv)])
-    context.log.info("R output: %s", stdout)
-
-    return MaterializeResult(
-        metadata={
-            "input_csv": str(input_csv),
-            "output_csv": str(output_csv),
-            "r_stdout": stdout,
-        }
-    )
