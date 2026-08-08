@@ -11,7 +11,7 @@ This repository is a complete starter kit for a **1-hour workshop** aimed at R-f
 ## What is Included
 
 - Dagster scaffold with assets, jobs, and schedules
-- API materialization demo asset
+- weather API materialization demo asset
 - Scheduled API ingestion demo asset
 - Python helper to run R scripts through subprocess (`Rscript`)
 - Quarto slideshow source for workshop delivery
@@ -27,7 +27,8 @@ This repository is a complete starter kit for a **1-hour workshop** aimed at R-f
 │  ├─ definitions.py
 │  └─ r_runner.py
 ├─ scripts/
-│  └─ summarize_livestock_api.R
+│  ├─ fetch_weather_open_meteo.R
+│  └─ summarize_weather_open_meteo.R
 ├─ slides/
 │  └─ workshop.qmd
 ├─ run_r_subprocess.py
@@ -92,17 +93,17 @@ Dagster UI typically opens at `http://127.0.0.1:3000`.
 
 ## Live Demo Plan
 
-### Demo 1: Materialize a Simple API Asset
+### Demo 1: Fetch Weather Data from Open-Meteo
 
-1. In Dagster UI, open asset `livestock_reference_api`.
+1. In Dagster UI, open asset `weather_api_demo`.
 2. Click **Materialize**.
-3. Show metadata and output file: `data/livestock_reference_api.json`.
+3. Show metadata and output file: `data/weather_open_meteo.csv`.
 
 ### Demo 2: Execute R Script via Dagster Asset
 
 1. Open asset `r_postprocess_demo`.
-2. Materialize it (it depends on `livestock_reference_api`).
-3. Show generated file: `data/livestock_reference_summary.csv`.
+2. Materialize it (it depends on `weather_api_demo`).
+3. Show generated file: `data/weather_open_meteo_summary.csv`.
 4. Explain Python -> subprocess -> `Rscript` bridge in `r_runner.py`.
 
 ### Demo 3: Scheduled API Call
@@ -117,7 +118,7 @@ Dagster UI typically opens at `http://127.0.0.1:3000`.
 You can run any R script through Python:
 
 ```powershell
-uv run python run_r_subprocess.py scripts/summarize_livestock_api.R data/livestock_reference_api.json data/livestock_reference_summary.csv
+uv run python run_r_subprocess.py scripts/summarize_weather_open_meteo.R data/weather_open_meteo.csv data/weather_open_meteo_summary.csv
 ```
 
 ## Quarto Slides
@@ -212,5 +213,5 @@ Then open a new terminal and re-run `Rscript --version`.
 uv run dagster dev -m dagster_livestock_workshop.definitions
 ```
 
-9. In Dagster UI, materialize `livestock_reference_api`.
-10. Materialize `r_postprocess_demo` and confirm `data/livestock_reference_summary.csv` exists.
+9. In Dagster UI, materialize `weather_api_demo`.
+10. Materialize `r_postprocess_demo` and confirm `data/weather_open_meteo_summary.csv` exists.
