@@ -1,7 +1,8 @@
 ---
 title: "Dagster Fundamentals for Precision Livestock Technology"
 subtitle: "1-Hour Hands-On Workshop"
-author: "By Andrew Antaya"
+author: "Andrew Antaya"
+date: today
 format:
   revealjs:
     theme: simple
