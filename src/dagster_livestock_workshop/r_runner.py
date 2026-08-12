@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-def run_r_script(script_path: str | Path, args: Iterable[str] | None = None, timeout_seconds: int = 120) -> str:
+def run_r_script(script_path: str | Path, args: Iterable[str] | None = None, timeout_seconds: int = 600) -> str:
     """Run an R script through Rscript and return stdout."""
     script = str(script_path)
     arg_list = list(args or [])
