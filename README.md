@@ -234,7 +234,7 @@ Rscript -e "if (!requireNamespace('DBI', quietly=TRUE)) install.packages('DBI', 
 If `Rscript` is not recognized, add your R x64 bin folder to PATH (example):
 
 ```powershell
-$target = 'C:\Program Files\R\R-4.5.2\bin\x64'
+$target = 'C:\Program Files\R\R-4.6.1\bin\x64'
 $env:Path = "$target;$env:Path"
 [Environment]::SetEnvironmentVariable('Path', "$target;" + [Environment]::GetEnvironmentVariable('Path','User'), 'User')
 ```
