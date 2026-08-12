@@ -1,5 +1,19 @@
 [
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Dagster Fundamentals Workshop",
+    "section": "",
+    "text": "This repository contains:\n\nA Dagster scaffold with API and scheduling demos\nA Python subprocess utility that runs R scripts with Rscript\nA 1-hour slide deck for teaching Dagster fundamentals\n\nOpen the slide deck at:\n\nWorkshop Slides"
+  },
+  {
+    "objectID": "index.html#precision-livestock-technology-workshop",
+    "href": "index.html#precision-livestock-technology-workshop",
+    "title": "Dagster Fundamentals Workshop",
+    "section": "",
+    "text": "This repository contains:\n\nA Dagster scaffold with API and scheduling demos\nA Python subprocess utility that runs R scripts with Rscript\nA 1-hour slide deck for teaching Dagster fundamentals\n\nOpen the slide deck at:\n\nWorkshop Slides"
+  },
+  {
     "objectID": "slides/index.html#what-is-an-orchestrator",
     "href": "slides/index.html#what-is-an-orchestrator",
     "title": "Dagster Fundamentals for Precision Livestock Technology",
@@ -152,19 +166,5 @@
     "title": "Dagster Fundamentals for Precision Livestock Technology",
     "section": "Q&A",
     "text": "Q&A\nWhat part should we productionize first for your team?"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Dagster Fundamentals Workshop",
-    "section": "",
-    "text": "This repository contains:\n\nA Dagster scaffold with API and scheduling demos\nA Python subprocess utility that runs R scripts with Rscript\nA 1-hour slide deck for teaching Dagster fundamentals\n\nOpen the slide deck at:\n\nWorkshop Slides"
-  },
-  {
-    "objectID": "index.html#precision-livestock-technology-workshop",
-    "href": "index.html#precision-livestock-technology-workshop",
-    "title": "Dagster Fundamentals Workshop",
-    "section": "",
-    "text": "This repository contains:\n\nA Dagster scaffold with API and scheduling demos\nA Python subprocess utility that runs R scripts with Rscript\nA 1-hour slide deck for teaching Dagster fundamentals\n\nOpen the slide deck at:\n\nWorkshop Slides"
   }
 ]
